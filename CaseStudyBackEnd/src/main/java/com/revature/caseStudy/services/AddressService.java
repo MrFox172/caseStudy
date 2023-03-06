@@ -51,15 +51,19 @@ public class AddressService implements AddressServiceI {
         int zipcode = checkOutDTO.getZipCode();
         String country = checkOutDTO.getCountry();
 
-        if(street.equals("")||zipcode>9999||country.equals(""))
+        if(street.equals("")||zipcode<=9999||country.equals(""))
             throw new InvalidAddressException();
 
         Optional<Address> addressFound = addressRepository.findByMatchAll(street, checkOutDTO.getCity(), checkOutDTO.getState(),zipcode,country);
-        Address address = addressFound.get();
-        if(address==null)
+        Address address;
+        if(addressFound.isEmpty())
         {
             address = new Address(0,checkOutDTO.getStreet(), checkOutDTO.getCity(), checkOutDTO.getState(), checkOutDTO.getZipCode(), checkOutDTO.getCountry());
             address = addressRepository.save(address);
+        }
+        else
+        {
+            address = addressFound.get();
         }
         return address;
     }

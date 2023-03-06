@@ -3,6 +3,8 @@ package com.revature.caseStudy.controllers;
 import com.revature.caseStudy.dtos.CheckOutDTO;
 import com.revature.caseStudy.exceptions.CheckoutFailedException;
 import com.revature.caseStudy.exceptions.InvalidAddressException;
+import com.revature.caseStudy.exceptions.InvalidUserException;
+import com.revature.caseStudy.exceptions.ProductRetrievalFailedException;
 import com.revature.caseStudy.services.CheckoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ public class CheckoutController {
         try
         {
             checkoutService.processCheckout(checkOutDTO);
-            return (ResponseEntity<String>) ResponseEntity.accepted();
+            return (ResponseEntity<String>) ResponseEntity.accepted().body("Your order has been taken.");
         }
         catch(CheckoutFailedException e)
         {
@@ -37,6 +39,16 @@ public class CheckoutController {
         {
             System.out.println(e.getStackTrace());
             return ResponseEntity.badRequest().body("There was an error in assigning the shipping addresss.");
+        }
+        catch(InvalidUserException e)
+        {
+            System.out.println(e.getStackTrace());
+            return ResponseEntity.badRequest().body("There was an error in user details.");
+        }
+        catch(ProductRetrievalFailedException e)
+        {
+            System.out.println(e.getStackTrace());
+            return ResponseEntity.badRequest().body("A product in your cart no longer available.");
         }
         catch(Exception e)
         {
